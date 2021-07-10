@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model comment {
+  id                 Int      @id @default(autoincrement())
+  comment            String   @db.VarChar(300)
+  author             Int
+  post               Int
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime
+  user               user     @relation(fields: [author], references: [id])
+  post_commentTopost post     @relation(fields: [post], references: [id])
+}
+
+model post {
+  id         Int       @id @default(autoincrement())
+  title      String    @db.VarChar(100)
+  body       String    @db.VarChar(255)
+  author     Int
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime?
+  image_name String?   @db.VarChar(200)
+  image_path String?   @db.VarChar(200)
+  mime_type  String?   @db.VarChar(200)
+  published  Boolean   @default(false)
+  user       user      @relation(fields: [author], references: [id])
+  comment    comment[]
+}
+
+model session {
+  id        String   @id
+  sid       String   @unique
+  data      String
+  expiresAt DateTime
+}
+
+model token {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  token     String   @db.VarChar(300)
+  createdAt DateTime @default(now())
+}
+
+model user {
+  id           Int           @id @default(autoincrement())
+  firstname    String        @db.VarChar(100)
+  email        String        @unique @db.VarChar(100)
+  isAdmin      Boolean       @default(false)
+  password     String        @db.VarChar(300)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime?
+  lastname     String        @db.VarChar(100)
+  isVerified   Boolean?      @default(false)
+  comment      comment[]
+  post         post[]
+  user_profile user_profile?
+}
+
+model user_profile {
+  id          Int       @id @default(autoincrement())
+  user_id     Int       @unique
+  username    String?   @db.VarChar(200)
+  address     String?
+  city        String?   @db.VarChar(100)
+  state       String?   @db.VarChar(200)
+  postal_code Int?
+  about_me    String?   @db.VarChar(500)
+  avatar      Bytes?
+  createdAt   DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime? @db.Timestamp(6)
+  avatar_name String?   @db.VarChar(200)
+  mime_type   String?   @db.VarChar(100)
+  user        user      @relation(fields: [user_id], references: [id])
+}
