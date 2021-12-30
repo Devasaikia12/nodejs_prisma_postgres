@@ -11,11 +11,15 @@ const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 const { PrismaSessionStore } = require('@quixo3/prisma-session-store')
 const dotenv = require('dotenv')
+const passport = require('passport')
+const HttpsProxyAgent = require('https-proxy-agent');
+
 dotenv.config()
 //--route files import
 const userRoute = require('./routes/user.js')
 const postRoute = require('./routes/post')
 const dashboardRoute = require('./routes/dashboard')
+
 //-- app setup
 const app = express()
 app.use(express.json())
@@ -40,6 +44,11 @@ app.use(
   })
 )
 
+//  app to use passport settings
+app.use(passport.initialize())
+app.use(passport.session())
+require('./services/passport-google')(passport)
+
 //--- setting ejs thml template --
 app.set('view engine', 'ejs')
 app.set('views', [
@@ -59,14 +68,21 @@ app.use(express.urlencoded({ extended: false }))
 //---routes start here--
 
 app.get('/', async (req, res) => {
-  const token = req.cookies.jwt || ''
-  const decode = await jwt.verify(token, 'secret')
-
-  if (decode.id) {
-    res.redirect('/dashboard')
-  }
-  res.render('index')
+  //console.log(req.cookies.jwt)
+  // let token = req.cookies.jwt || ''
+  // //console.log(token)
+  // if (token) {
+  //   //token = token.token
+  //   const decode = await jwt.verify(token, 'secret')
+  //   console.log(decode)
+  //   if (decode.id) {
+  //     res.redirect('/dashboard')
+  //   }
+  // } else {
+    res.render('index')
+  //}
 })
+app.use('/auth', require('./routes/auth'))
 app.use('/users', userRoute)
 app.use('/posts', postRoute)
 app.use('/dashboard', dashboardRoute)

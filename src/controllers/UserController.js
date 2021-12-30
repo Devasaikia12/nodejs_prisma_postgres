@@ -334,6 +334,7 @@ const getUserProfile = async (req, res) => {
       },
     })
     if (!userInfo) {
+      console.log('No user profile found')
       res.render('profileInfo', { error: 'User Not Found', user: userData })
     }
     console.log(userInfo)

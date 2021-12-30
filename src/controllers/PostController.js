@@ -66,7 +66,7 @@ const createPost = async (req, res) => {
       image_name: filename,
       mime_type: mimetype,
     }
-    console.log(data)
+    //console.log(data)
     const newPost = await prisma.post.create({
       data,
     })

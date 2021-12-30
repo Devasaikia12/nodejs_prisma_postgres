@@ -15,7 +15,9 @@
           <div class="col-lg-3 order-lg-2">
             <div class="card-profile-image">
               <a href="#">
+              <% if(user.user_profile) {%>
                 <img src="data:<%= user.user_profile.mime_type%>;base64,<%= user.user_profile.avatar.toString('base64')%>" class="rounded-circle">
+                <% }%>
               </a>
             </div>
           </div>
