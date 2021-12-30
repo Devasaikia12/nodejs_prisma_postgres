@@ -4,7 +4,7 @@ const generateToken = require('../uttils/generateToken')
 const options = {
   auth: {
     api_key:
-      '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',
+      process.env.SENDGRID,
   },
 }
 
